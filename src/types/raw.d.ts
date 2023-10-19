@@ -136,3 +136,20 @@ export type ServerRaw = {
     }
   }
 }
+
+export type ServerDatabaseRaw = {
+  identifier: string
+  host: ServerDatabaseHost
+  name: string
+  username: string
+  connections_from: string
+  max_connections: number
+  relationships?: {
+    password: {
+      object: string
+      attributes: {
+        password: string
+      }
+    }
+  }
+}

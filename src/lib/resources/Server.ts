@@ -2,6 +2,7 @@ import { JurassicBridge } from "../JurassicBridge.js"
 import { ServerDatabase } from "./ServerDatabase.js"
 import { SftpDetails, Resources, FeatureLimits } from "../../types/server.js"
 import { ServerDatabaseRaw, ServerRaw } from "../../types/raw.js"
+import { ServerDatabaseNew } from "../../types/database.js"
 
 export class Server {
   // System
@@ -20,6 +21,9 @@ export class Server {
   public featureLimits: FeatureLimits
   public state?: string
   private _name?: string
+
+  // Relationships
+  private _databases: ServerDatabase[] = []
 
   constructor(bridge: JurassicBridge, data: ServerRaw) {
     this.bridge = bridge
@@ -95,6 +99,18 @@ export class Server {
   public get isCrashed(): boolean {
     return this.state === 'crashed'
   }
+
+  public get databases() {
+    if (!this._databases) {
+      this.bridge.get(`/servers/${this.identifier}/databases`)
+        .then((response) => {
+          this._databases = (response.data as ServerDatabaseRaw[]).map((database) => new ServerDatabase(this.bridge, database))
+        })
+    }
+
+    return this._databases
+  }
+
   //----------------------------------
   // Functions
   // ---------------------------------
@@ -187,4 +203,12 @@ export class Server {
     return servers
   }
 
+  /**
+   * Create a new database for this server
+   */
+  public async createDatabase(data: ServerDatabaseNew) {
+    const database = await ServerDatabase.create(this.bridge, this.identifier, data)
+    this._databases.push(database)
+    return database
+  }
 }

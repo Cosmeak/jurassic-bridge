@@ -2,11 +2,11 @@ import { ServerDatabaseHost } from "./database.js"
 import { SftpDetails, FeatureLimits } from "./server.js"
 
 export interface Raw {
-  object: "server" | "system_permissions" | "stats" | "server_database" | "server_schedule" | "schedule_task",
+  object: "server" | "system_permissions" | "stats" | "server_database" | "server_schedule" | "schedule_task" | "api_key" | "user",
   attributes: RawAttributes
 }
 
-export type RawAttributes = ServerRaw | PermissionRaw | ServerDatabaseRaw
+export type RawAttributes = ServerRaw | PermissionRaw | ServerDatabaseRaw | ApiKeyRaw | UserRaw
 
 export type ErrorRaw = {
   code: string
@@ -152,4 +152,20 @@ export type ServerDatabaseRaw = {
       }
     }
   }
+}
+
+export interface UserRaw {
+  identifier: string
+  description: string
+  allowed_ips: string[]
+  last_used_at: string
+  created_at: string
+}
+
+export interface ApiKeyRaw {
+  identifier: string
+  description: string
+  allowed_ips: string[]
+  last_used_at: string
+  created_at: string
 }

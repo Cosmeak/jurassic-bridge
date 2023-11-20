@@ -1,16 +1,16 @@
-import { Server } from './resources/Server.js'
-import { JurassicBridge } from './JurassicBridge.js'
-import { trimUrl } from './utils.js'
+import { Server } from "./resources/Server.js";
+import { JurassicBridge } from "./JurassicBridge.js";
+import { trimUrl } from "./utils.js";
 
 export default class Client {
   // System
-  public bridge: JurassicBridge
+  public bridge: JurassicBridge;
 
   // Relationships
-  private _servers: Server[] = []
+  private _servers: Server[] = [];
 
   constructor(host: string, key: string) {
-    this.bridge = new JurassicBridge(`${trimUrl(host)}/api/client`, key)
+    this.bridge = new JurassicBridge(`${trimUrl(host)}/api/client`, key);
   }
 
   //----------------------------------
@@ -18,12 +18,16 @@ export default class Client {
   // ---------------------------------
   public get servers() {
     return Server.getAllServers(this.bridge)
+      .then((servers) => {
+        this._servers = servers;
+      })
+      .finally(() => this._servers);
   }
 
   public get permissions() {
-    return (async () => {
-      const response = await this.bridge.get(`/permissions`)
-      return response.data
-    })
+    return async () => {
+      const response = await this.bridge.get(`/permissions`);
+      return response.data;
+    };
   }
 }
